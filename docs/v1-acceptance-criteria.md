@@ -10,3 +10,4 @@
 - Public GitHub data is fetched directly from the browser.
 - No API key, account, telemetry, backend, or database exists.
 - `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass before completion.
+- Public commit activity appears on the transit map after GitHub publishes it through the public API.
