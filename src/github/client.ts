@@ -67,24 +67,36 @@ const contributorSchema = z.object({
 
 export async function fetchRepositorySnapshot(
   ref: RepositoryRef,
+  token?: string,
 ): Promise<RepositorySnapshot> {
   const base = `https://api.github.com/repos/${ref.owner}/${ref.name}`;
   const fetchedAt = new Date().toISOString();
   const [repo, branches, commits, prs, releases, workflows, contributors] =
     await Promise.all([
-      fetchRequired(base, repoSchema),
-      fetchOptional(`${base}/branches?per_page=8`, z.array(branchSchema), []),
-      fetchOptional(`${base}/commits?per_page=40`, z.array(commitSchema), []),
+      fetchRequired(base, repoSchema, token),
+      fetchOptional(`${base}/branches?per_page=8`, z.array(branchSchema), [], token),
+      fetchOptional(`${base}/commits?per_page=40`, z.array(commitSchema), [], token),
       fetchOptional(
         `${base}/pulls?state=all&sort=updated&direction=desc&per_page=12`,
         z.array(prSchema),
         [],
+        token,
       ),
-      fetchOptional(`${base}/releases?per_page=5`, z.array(releaseSchema), []),
-      fetchOptional(`${base}/actions/runs?per_page=10`, workflowSchema, {
-        workflow_runs: [],
-      }),
-      fetchOptional(`${base}/contributors?per_page=20`, z.array(contributorSchema), []),
+      fetchOptional(`${base}/releases?per_page=5`, z.array(releaseSchema), [], token),
+      fetchOptional(
+        `${base}/actions/runs?per_page=10`,
+        workflowSchema,
+        {
+          workflow_runs: [],
+        },
+        token,
+      ),
+      fetchOptional(
+        `${base}/contributors?per_page=20`,
+        z.array(contributorSchema),
+        [],
+        token,
+      ),
     ]);
 
   return {
@@ -165,13 +177,17 @@ export async function fetchRepositorySnapshot(
   };
 }
 
-async function fetchRequired<T>(url: string, schema: z.ZodSchema<T>): Promise<T> {
+async function fetchRequired<T>(
+  url: string,
+  schema: z.ZodSchema<T>,
+  token?: string,
+): Promise<T> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), 10_000);
   try {
     const response = await fetch(url, {
       signal: controller.signal,
-      headers: { Accept: "application/vnd.github+json" },
+      headers: githubHeaders(token),
     });
     if (!response.ok) {
       throw new Error(
@@ -192,13 +208,14 @@ async function fetchOptional<T>(
   url: string,
   schema: z.ZodSchema<T>,
   fallback: T,
+  token?: string,
 ): Promise<{ value: T; warnings: { code: string; message: string }[] }> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), 10_000);
   try {
     const response = await fetch(url, {
       signal: controller.signal,
-      headers: { Accept: "application/vnd.github+json" },
+      headers: githubHeaders(token),
     });
     if (!response.ok) {
       return {
@@ -215,4 +232,11 @@ async function fetchOptional<T>(
   } finally {
     window.clearTimeout(timer);
   }
+}
+
+function githubHeaders(token?: string) {
+  return {
+    Accept: "application/vnd.github+json",
+    ...(token?.trim() ? { Authorization: `Bearer ${token.trim()}` } : {}),
+  };
 }

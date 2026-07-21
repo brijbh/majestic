@@ -11,6 +11,7 @@ type AppState = {
   paused: boolean;
   reducedMotion: boolean;
   lastRepository: string;
+  githubToken: string;
   selectedTrainId?: string;
   snapshot?: RepositorySnapshot;
   error?: string;
@@ -18,6 +19,8 @@ type AppState = {
   setSpeed: (speed: number) => void;
   setPaused: (paused: boolean) => void;
   setReducedMotion: (reducedMotion: boolean) => void;
+  setGithubToken: (githubToken: string) => void;
+  clearGithubToken: () => void;
   launch: (snapshot: RepositorySnapshot, repositoryInput: string) => void;
   setError: (error?: string) => void;
   selectTrain: (train?: TransitTrain) => void;
@@ -33,10 +36,13 @@ export const useAppStore = create<AppState>()(
       paused: false,
       reducedMotion: false,
       lastRepository: "",
+      githubToken: "",
       setTheme: (theme) => set({ theme }),
       setSpeed: (speed) => set({ speed }),
       setPaused: (paused) => set({ paused }),
       setReducedMotion: (reducedMotion) => set({ reducedMotion }),
+      setGithubToken: (githubToken) => set({ githubToken }),
+      clearGithubToken: () => set({ githubToken: "" }),
       launch: (snapshot, repositoryInput) =>
         set({
           mode: "map",
@@ -56,6 +62,7 @@ export const useAppStore = create<AppState>()(
         speed: state.speed,
         reducedMotion: state.reducedMotion,
         lastRepository: state.lastRepository,
+        githubToken: state.githubToken,
       }),
     },
   ),

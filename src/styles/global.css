@@ -135,6 +135,52 @@ h1 {
   border-color: rgba(126, 231, 135, 0.36);
 }
 
+.token-help {
+  margin: 1.2rem auto 0;
+  max-width: 860px;
+  text-align: left;
+  border: 1px solid rgba(155, 233, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(5, 14, 21, 0.76);
+  padding: 0.95rem 1rem;
+}
+
+.token-help summary {
+  cursor: pointer;
+  color: #9be9ff;
+  font-weight: 700;
+}
+
+.token-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(320px, 1.1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.token-grid input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(155, 233, 255, 0.36);
+  background: rgba(2, 8, 12, 0.82);
+  color: #f0f6fc;
+  border-radius: 8px;
+  padding: 0.72rem 0.85rem;
+}
+
+.token-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.token-grid p,
+.token-grid li {
+  color: #b9c7d5;
+  line-height: 1.45;
+}
+
 .map-shell {
   height: 100vh;
   display: grid;

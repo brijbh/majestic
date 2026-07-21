@@ -35,7 +35,9 @@ http://github.com/facebook/react
 github.com/facebook/react
 ```
 
-Git Transit V1 supports public GitHub repositories only and does not request a GitHub token.
+Git Transit V1 supports public GitHub repositories. A token is optional and is intended for repository owners who want higher GitHub API limits or read-only access to repositories their token can view.
+
+For repeated use, repository owners may optionally provide a fine-grained, read-only GitHub personal access token. The token is stored only in the browser's local storage and is sent directly to GitHub with API requests. It is not sent to Majestic infrastructure because V1 has no backend.
 
 ## Local Setup
 
@@ -63,6 +65,15 @@ The app is a static Vite React application. React owns forms, controls, panels, 
 ## GitHub Data Processing
 
 The browser requests repository metadata, branches, commits, pull requests, releases, and workflow runs from GitHub public APIs. Optional endpoint failures become warnings where possible so the map can still render partial activity.
+
+Optional token setup:
+
+1. Open GitHub Settings, then Developer settings.
+2. Select Personal access tokens, then Fine-grained tokens.
+3. Generate a new token with an expiration date.
+4. Select the repository owner and only the repositories needed.
+5. Use read-only repository permissions. Contents and metadata support basic activity. Add read-only Pull requests and Actions for richer PR and workflow data.
+6. Copy the token once, paste it into Git Transit, and save it locally.
 
 ## Themes
 

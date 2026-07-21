@@ -10,7 +10,11 @@ export function RepositoryEntry() {
   const launch = useAppStore((state) => state.launch);
   const storedError = useAppStore((state) => state.error);
   const setError = useAppStore((state) => state.setError);
+  const githubToken = useAppStore((state) => state.githubToken);
+  const setGithubToken = useAppStore((state) => state.setGithubToken);
+  const clearGithubToken = useAppStore((state) => state.clearGithubToken);
   const [value, setValue] = useState(lastRepository);
+  const [tokenValue, setTokenValue] = useState(githubToken);
   const [loading, setLoading] = useState(false);
 
   async function submit(event: FormEvent) {
@@ -20,7 +24,7 @@ export function RepositoryEntry() {
     try {
       const ref = parseRepositoryInput(value);
       console.info("[Git Transit] Launching public repository", ref);
-      const snapshot = await fetchRepositorySnapshot(ref);
+      const snapshot = await fetchRepositorySnapshot(ref, githubToken);
       console.info("[Git Transit] Repository snapshot loaded", {
         repository: snapshot.repository.fullName,
         branches: snapshot.branches.length,
@@ -70,6 +74,54 @@ export function RepositoryEntry() {
           Repository activity is fetched directly from GitHub and is not sent to or
           stored on our servers.
         </p>
+        <details className="token-help">
+          <summary>
+            Optional: use a read-only GitHub token for higher API limits
+          </summary>
+          <div className="token-grid">
+            <div>
+              <label htmlFor="github-token">Fine-grained token</label>
+              <input
+                id="github-token"
+                type="password"
+                value={tokenValue}
+                onChange={(event) => setTokenValue(event.target.value)}
+                placeholder="github_pat_..."
+                autoComplete="off"
+              />
+              <div className="token-actions">
+                <button type="button" onClick={() => setGithubToken(tokenValue.trim())}>
+                  Save token locally
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTokenValue("");
+                    clearGithubToken();
+                  }}
+                >
+                  Forget token
+                </button>
+              </div>
+              <p>
+                The token is stored only in this browser's local storage and is sent
+                directly to GitHub in API requests. Do not use someone else's token.
+              </p>
+            </div>
+            <ol>
+              <li>Open GitHub Settings → Developer settings.</li>
+              <li>Choose Personal access tokens → Fine-grained tokens.</li>
+              <li>Generate a new token with an expiration date.</li>
+              <li>Select the repository owner and only the repositories you need.</li>
+              <li>
+                Use read-only repository permissions. Contents and metadata are enough
+                for basic repository activity; add read-only Pull requests and Actions
+                if you want richer PR/workflow data.
+              </li>
+              <li>Generate the token, copy it once, paste it here, and save.</li>
+            </ol>
+          </div>
+        </details>
         <button
           className="demo-button"
           type="button"
