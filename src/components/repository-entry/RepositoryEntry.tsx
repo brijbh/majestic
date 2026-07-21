@@ -48,9 +48,7 @@ export function RepositoryEntry() {
   return (
     <main className="entry-screen">
       <section className="entry-hero" aria-labelledby="product-title">
-        <div className="brand-mark" aria-hidden="true">
-          GT
-        </div>
+        <img className="entry-logo" src="/logo.png" alt="" aria-hidden="true" />
         <p className="eyebrow">Public GitHub repositories only</p>
         <h1 id="product-title">GIT TRANSIT</h1>
         <p className="tagline">Watch a repository come alive.</p>

@@ -36,9 +36,7 @@ export function MapShell() {
     <main className={`map-shell theme-${theme}`}>
       <header className="top-bar">
         <button className="brand-button" type="button" onClick={backToEntry}>
-          <span className="train-glyph" aria-hidden="true">
-            ▣
-          </span>
+          <img src="/logo.png" alt="" aria-hidden="true" />
           <span>
             <strong>GIT TRANSIT</strong>
             <small>LIVE REPOSITORY MAP</small>

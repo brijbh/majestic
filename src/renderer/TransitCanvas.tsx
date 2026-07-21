@@ -469,8 +469,8 @@ function drawMiniMap(
   height: number,
   theme: ThemeName,
 ) {
-  const miniW = Math.max(158, Math.min(220, width * 0.16));
-  const miniH = Math.max(90, Math.min(130, height * 0.16));
+  const miniW = Math.max(150, Math.min(190, width * 0.135));
+  const miniH = Math.max(82, Math.min(112, height * 0.14));
   const x = frame.right - miniW - 34;
   const y = frame.bottom - miniH - 18;
   const box = new PIXI.Graphics();
@@ -496,13 +496,13 @@ function drawMiniMap(
       });
     scene.addChild(route);
   });
-  const zoomPlus = text("+", { fill: "#dbe9ff", fontSize: 22 });
-  zoomPlus.x = x + miniW + 18;
-  zoomPlus.y = y + 12;
+  const zoomPlus = text("+", { fill: "#dbe9ff", fontSize: 18 });
+  zoomPlus.x = x + miniW + 12;
+  zoomPlus.y = y + 8;
   scene.addChild(zoomPlus);
-  const zoomMinus = text("−", { fill: "#dbe9ff", fontSize: 24 });
-  zoomMinus.x = x + miniW + 20;
-  zoomMinus.y = y + 52;
+  const zoomMinus = text("−", { fill: "#dbe9ff", fontSize: 20 });
+  zoomMinus.x = x + miniW + 14;
+  zoomMinus.y = y + 42;
   scene.addChild(zoomMinus);
 }
 
