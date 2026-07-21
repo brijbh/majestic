@@ -59,7 +59,7 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         antialias: theme === "metro",
         backgroundAlpha: 0,
         autoDensity: true,
-        resolution: window.devicePixelRatio || 1,
+        resolution: Math.min(window.devicePixelRatio || 1, 1.5),
       })
       .then(() => {
         initialized = true;
@@ -85,8 +85,12 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         resizeObserver = new ResizeObserver(resize);
         resizeObserver.observe(host);
         resize();
+        let lastDraw = 0;
         const tick = () => {
           try {
+            const now = performance.now();
+            if (now - lastDraw < 66) return;
+            lastDraw = now;
             drawScene(app, scene, model, theme, paused, speed, selectTrain);
           } catch (error) {
             const message =
@@ -319,25 +323,8 @@ function drawRoute(
   }));
   path.moveTo(points[0].x, y);
   for (let i = 1; i < points.length; i += 1) {
-    const prev = points[i - 1];
     const point = points[i];
-    const curve =
-      (line.id === "feature" && i >= 3 && i <= 5) ||
-      (line.id === "release" && i >= 5) ||
-      (line.id === "hotfix" && i >= 4);
-    if (curve) {
-      const lift = line.id === "hotfix" ? -44 : line.id === "release" ? -58 : -28;
-      path.bezierCurveTo(
-        prev.x + (point.x - prev.x) * 0.45,
-        prev.y,
-        prev.x + (point.x - prev.x) * 0.55,
-        point.y + lift,
-        point.x,
-        point.y + (line.id === "release" && i >= 6 ? lift : 0),
-      );
-    } else {
-      path.lineTo(point.x, point.y);
-    }
+    path.lineTo(point.x, point.y);
   }
   path.stroke({
     color: Number(line.color.replace("#", "0x")),
