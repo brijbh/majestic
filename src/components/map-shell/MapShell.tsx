@@ -30,19 +30,47 @@ export function MapShell() {
   return (
     <main className={`map-shell theme-${theme}`}>
       <header className="top-bar">
-        <button className="ghost-button" type="button" onClick={backToEntry}>
-          Git Transit
+        <button className="brand-button" type="button" onClick={backToEntry}>
+          <span className="train-glyph" aria-hidden="true">
+            ▣
+          </span>
+          <span>
+            <strong>GIT TRANSIT</strong>
+            <small>LIVE REPOSITORY MAP</small>
+          </span>
         </button>
-        <div>
+        <div className="repo-launcher" aria-label="Current repository">
+          <span className="github-dot" aria-hidden="true">
+            ◖
+          </span>
           <strong>{snapshot.repository.fullName}</strong>
-          <span>Live view · Auto-refresh every 60 seconds</span>
+          <button type="button" onClick={backToEntry} aria-label="Change repository">
+            →
+          </button>
+          <small>
+            <span className="live-dot" /> LIVE · Last updated{" "}
+            {new Date(snapshot.fetchedAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}{" "}
+            · Auto-refresh every 60s
+          </small>
         </div>
         <div className="top-controls" aria-label="Map controls">
+          <span>THEME</span>
           <button
+            className={theme === "metro" ? "is-active" : ""}
             type="button"
-            onClick={() => setTheme(theme === "metro" ? "retro" : "metro")}
+            onClick={() => setTheme("metro")}
           >
-            {theme === "metro" ? "Retro" : "Metro"}
+            Metro
+          </button>
+          <button
+            className={theme === "retro" ? "is-active" : ""}
+            type="button"
+            onClick={() => setTheme("retro")}
+          >
+            Retro
           </button>
           <button type="button" onClick={() => setPaused(!paused)}>
             {paused ? "Play" : "Pause"}
@@ -54,17 +82,44 @@ export function MapShell() {
       </header>
       <section className="workspace">
         <aside className="legend" aria-label="Transit legend">
-          <h2>Lines</h2>
-          {model.lines.map((line) => (
-            <div key={line.id} className="legend-row">
-              <span style={{ background: line.color }} />
-              {line.label}
-            </div>
-          ))}
-          <h2>Signals</h2>
-          <p>
-            Shape and motion reinforce status for users who cannot rely on color alone.
-          </p>
+          <section>
+            <h2>Lines</h2>
+            {model.lines.map((line) => (
+              <div key={line.id} className="legend-row">
+                <span style={{ background: line.color }} />
+                {line.label}
+              </div>
+            ))}
+          </section>
+          <section>
+            <h2>Stations</h2>
+            {model.stations.slice(0, 7).map((station) => (
+              <div key={station.id} className="legend-row station-key">
+                <span />
+                {station.label}
+              </div>
+            ))}
+          </section>
+          <section>
+            <h2>Filters</h2>
+            {["Show Trains", "Show Labels", "Show Avatars", "Show Merged"].map(
+              (item) => (
+                <label className="toggle-row" key={item}>
+                  {item}
+                  <input type="checkbox" defaultChecked />
+                </label>
+              ),
+            )}
+          </section>
+          <section className="active-trains">
+            <span className="train-glyph" aria-hidden="true">
+              ▣
+            </span>
+            <span>
+              ACTIVE TRAINS
+              <strong>{model.trains.length}</strong>
+            </span>
+          </section>
         </aside>
         <section className="map-stage" aria-label="Animated transit map">
           <TransitCanvas
@@ -80,13 +135,33 @@ export function MapShell() {
         </aside>
       </section>
       <footer className="status-strip">
-        <span>Default branch: {snapshot.repository.defaultBranch}</span>
-        <span>{snapshot.commits.length} recent commits</span>
-        <span>
-          {snapshot.pullRequests.filter((pr) => pr.state === "open").length} open PRs
-        </span>
-        <label>
-          Speed
+        <div>
+          <small>Repository</small>
+          <strong>{snapshot.repository.fullName}</strong>
+        </div>
+        <div>
+          <small>Default branch</small>
+          <strong>{snapshot.repository.defaultBranch}</strong>
+        </div>
+        <div>
+          <small>Total commits</small>
+          <strong>{snapshot.commits.length}</strong>
+        </div>
+        <div>
+          <small>Open PRs</small>
+          <strong>
+            {snapshot.pullRequests.filter((pr) => pr.state === "open").length}
+          </strong>
+        </div>
+        <div>
+          <small>Workflows</small>
+          <strong>
+            {snapshot.workflowRuns.filter((run) => run.status === "success").length}{" "}
+            Passing
+          </strong>
+        </div>
+        <label className="speed-tile">
+          <small>Map speed</small>
           <input
             type="range"
             min="0.5"
