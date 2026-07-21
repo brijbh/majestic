@@ -154,6 +154,10 @@ export function MapShell() {
           </strong>
         </div>
         <div>
+          <small>Contributors</small>
+          <strong>{snapshot.contributors.length || "Unknown"}</strong>
+        </div>
+        <div>
           <small>Workflows</small>
           <strong>
             {snapshot.workflowRuns.filter((run) => run.status === "success").length}{" "}

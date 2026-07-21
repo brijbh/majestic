@@ -69,6 +69,12 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         host.appendChild(app.canvas);
         const scene = new PIXI.Container();
         app.stage.addChild(scene);
+        const resize = () => {
+          app.renderer.resize(host.clientWidth, host.clientHeight);
+        };
+        const resizeObserver = new ResizeObserver(resize);
+        resizeObserver.observe(host);
+        resize();
         const tick = () => {
           try {
             drawScene(app, scene, model, theme, paused, speed, selectTrain);
@@ -82,6 +88,7 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         };
         app.ticker.add(tick);
         drawScene(app, scene, model, theme, paused, speed, selectTrain);
+        app.stage.once("removed", () => resizeObserver.disconnect());
       })
       .catch((error: unknown) => {
         const message =
@@ -117,8 +124,8 @@ function drawScene(
   speed: number,
   selectTrain: (train?: TransitTrain) => void,
 ) {
-  const width = app.renderer.width / (window.devicePixelRatio || 1);
-  const height = app.renderer.height / (window.devicePixelRatio || 1);
+  const width = app.screen.width;
+  const height = app.screen.height;
   const time = paused ? 0 : performance.now() * 0.001 * speed;
   scene.removeChildren();
 

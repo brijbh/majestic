@@ -58,25 +58,34 @@ const workflowSchema = z.object({
   ),
 });
 
+const contributorSchema = z.object({
+  id: z.number(),
+  login: z.string(),
+  avatar_url: z.string().optional(),
+  contributions: z.number(),
+});
+
 export async function fetchRepositorySnapshot(
   ref: RepositoryRef,
 ): Promise<RepositorySnapshot> {
   const base = `https://api.github.com/repos/${ref.owner}/${ref.name}`;
   const fetchedAt = new Date().toISOString();
-  const [repo, branches, commits, prs, releases, workflows] = await Promise.all([
-    fetchRequired(base, repoSchema),
-    fetchOptional(`${base}/branches?per_page=8`, z.array(branchSchema), []),
-    fetchOptional(`${base}/commits?per_page=40`, z.array(commitSchema), []),
-    fetchOptional(
-      `${base}/pulls?state=all&sort=updated&direction=desc&per_page=12`,
-      z.array(prSchema),
-      [],
-    ),
-    fetchOptional(`${base}/releases?per_page=5`, z.array(releaseSchema), []),
-    fetchOptional(`${base}/actions/runs?per_page=10`, workflowSchema, {
-      workflow_runs: [],
-    }),
-  ]);
+  const [repo, branches, commits, prs, releases, workflows, contributors] =
+    await Promise.all([
+      fetchRequired(base, repoSchema),
+      fetchOptional(`${base}/branches?per_page=8`, z.array(branchSchema), []),
+      fetchOptional(`${base}/commits?per_page=40`, z.array(commitSchema), []),
+      fetchOptional(
+        `${base}/pulls?state=all&sort=updated&direction=desc&per_page=12`,
+        z.array(prSchema),
+        [],
+      ),
+      fetchOptional(`${base}/releases?per_page=5`, z.array(releaseSchema), []),
+      fetchOptional(`${base}/actions/runs?per_page=10`, workflowSchema, {
+        workflow_runs: [],
+      }),
+      fetchOptional(`${base}/contributors?per_page=20`, z.array(contributorSchema), []),
+    ]);
 
   return {
     repository: {
@@ -138,7 +147,12 @@ export async function fetchRepositorySnapshot(
       publishedAt: release.published_at ?? fetchedAt,
     })),
     deployments: [],
-    contributors: [],
+    contributors: contributors.value.map((contributor) => ({
+      id: String(contributor.id),
+      name: contributor.login,
+      avatarUrl: contributor.avatar_url,
+      contributions: contributor.contributions,
+    })),
     fetchedAt,
     warnings: [
       ...branches.warnings,
@@ -146,6 +160,7 @@ export async function fetchRepositorySnapshot(
       ...prs.warnings,
       ...releases.warnings,
       ...workflows.warnings,
+      ...contributors.warnings,
     ],
   };
 }

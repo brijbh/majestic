@@ -23,6 +23,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 button,
@@ -135,10 +136,11 @@ h1 {
 }
 
 .map-shell {
-  min-height: 100vh;
+  height: 100vh;
   display: grid;
-  grid-template-rows: 76px 1fr auto;
+  grid-template-rows: clamp(72px, 7vh, 104px) minmax(0, 1fr) clamp(78px, 8vh, 118px);
   background: #071018;
+  overflow: hidden;
 }
 
 .theme-retro {
@@ -183,12 +185,12 @@ h1 {
   border: 0;
   text-align: left;
   padding: 0;
-  min-width: 210px;
+  width: clamp(230px, 17vw, 360px);
 }
 
 .brand-button strong {
   display: block;
-  font-size: 1.6rem;
+  font-size: clamp(1.35rem, 1.45vw, 2.4rem);
   letter-spacing: 0;
 }
 
@@ -222,7 +224,7 @@ h1 {
 }
 
 .repo-launcher {
-  min-width: min(560px, 38vw);
+  width: clamp(420px, 34vw, 820px);
   border: 1px solid rgba(155, 233, 255, 0.28);
   border-radius: 8px;
   padding: 0.45rem 0.5rem 0.35rem 0.75rem;
@@ -282,9 +284,12 @@ h1 {
 .workspace {
   min-height: 0;
   display: grid;
-  grid-template-columns: 230px minmax(0, 1fr) 360px;
-  gap: 1rem;
-  padding: 1rem;
+  grid-template-columns:
+    clamp(210px, 11.5vw, 310px) minmax(0, 1fr)
+    clamp(320px, 18vw, 480px);
+  gap: clamp(0.75rem, 0.8vw, 1.4rem);
+  padding: clamp(0.75rem, 0.8vw, 1.4rem);
+  overflow: hidden;
 }
 
 .legend,
@@ -299,6 +304,8 @@ h1 {
   display: grid;
   gap: 0.7rem;
   align-content: start;
+  min-height: 0;
+  overflow: auto;
 }
 
 .legend h2,
@@ -360,7 +367,8 @@ h1 {
 }
 
 .map-stage {
-  min-height: 690px;
+  min-height: 0;
+  height: 100%;
   border: 1px solid rgba(155, 233, 255, 0.16);
   border-radius: 8px;
   overflow: hidden;
@@ -436,6 +444,18 @@ h1 {
   display: grid;
   gap: 1rem;
   align-content: start;
+  min-height: 0;
+  overflow: hidden;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.side-panels .panel {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.side-panels .panel:last-child {
+  overflow: auto;
 }
 
 .train-details {
@@ -470,9 +490,10 @@ h1 {
   border-top: 1px solid var(--panel-border);
   border-bottom: 0;
   display: grid;
-  grid-template-columns: repeat(6, minmax(140px, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: stretch;
   gap: 0.65rem;
+  overflow: hidden;
 }
 
 .status-strip > div,
@@ -484,7 +505,8 @@ h1 {
   border: 1px solid rgba(155, 233, 255, 0.18);
   border-radius: 8px;
   padding: 0.7rem 0.9rem;
-  min-height: 64px;
+  min-height: 0;
+  min-width: 0;
 }
 
 .status-strip strong {
@@ -513,6 +535,23 @@ h1 {
 
   .map-stage {
     min-height: 68vh;
+  }
+}
+
+@media (min-width: 2200px) {
+  .map-shell {
+    grid-template-rows: 112px minmax(0, 1fr) 132px;
+  }
+
+  .legend,
+  .panel,
+  .status-strip > div,
+  .status-strip label {
+    border-radius: 10px;
+  }
+
+  body {
+    font-size: 18px;
   }
 }
 
