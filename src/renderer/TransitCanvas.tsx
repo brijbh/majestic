@@ -68,6 +68,15 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
           return;
         }
         host.appendChild(app.canvas);
+        const handleContextLost = (event: Event) => {
+          event.preventDefault();
+          if (!destroyed) {
+            setRendererError(
+              "The browser lost the WebGL drawing context. Reload the page to restart the map.",
+            );
+          }
+        };
+        app.canvas.addEventListener("webglcontextlost", handleContextLost);
         const scene = new PIXI.Container();
         app.stage.addChild(scene);
         const resize = () => {
@@ -89,6 +98,13 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         };
         app.ticker.add(tick);
         drawScene(app, scene, model, theme, paused, speed, selectTrain);
+        app.canvas.addEventListener(
+          "webglcontextrestored",
+          () => {
+            if (!destroyed) setRendererError(undefined);
+          },
+          { once: true },
+        );
       })
       .catch((error: unknown) => {
         const message =
@@ -128,7 +144,9 @@ function drawScene(
   const width = app.screen.width;
   const height = app.screen.height;
   const time = paused ? 0 : performance.now() * 0.001 * speed;
-  scene.removeChildren();
+  scene.removeChildren().forEach((child) => {
+    child.destroy({ children: true });
+  });
 
   const frame = {
     left: Math.max(110, width * 0.08),
