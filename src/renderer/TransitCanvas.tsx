@@ -165,10 +165,6 @@ function drawScene(
     if (!y) continue;
     drawTrain(scene, train, line, y, model, frame, theme, time, selectTrain);
   }
-
-  if (height >= 560 && width >= 780) {
-    drawMiniMap(scene, lines, frame, width, height, theme);
-  }
 }
 
 function drawBackground(
@@ -191,8 +187,8 @@ function drawBackground(
 
 function drawMetroGrid(bg: PIXI.Graphics, width: number, height: number) {
   bg.rect(0, height * 0.72, width, height * 0.28).fill({
-    color: 0x06101d,
-    alpha: 0.9,
+    color: 0x04101b,
+    alpha: 0.45,
   });
   for (let x = 0; x < width; x += 42) {
     bg.moveTo(x, 0)
@@ -201,13 +197,6 @@ function drawMetroGrid(bg: PIXI.Graphics, width: number, height: number) {
   }
   for (let y = 0; y < height; y += 42) {
     bg.moveTo(0, y).lineTo(width, y).stroke({ color: 0x16425f, width: 1, alpha: 0.1 });
-  }
-  for (let i = 0; i < 24; i += 1) {
-    const x = 80 + ((i * 91) % Math.max(120, width - 160));
-    const h = 20 + ((i * 17) % 86);
-    bg.rect(x, height - 54 - h, 28, h).fill({ color: 0x0a1627, alpha: 0.9 });
-    bg.rect(x + 7, height - 72 - (h % 20), 4, 4).fill(0xffb454);
-    bg.rect(x + 18, height - 92 - (h % 26), 4, 4).fill(0x7ee787);
   }
 }
 
@@ -223,23 +212,17 @@ function drawRetroTerrain(
       bg.rect(x, y, 16, 16).fill({ color: tone, alpha: 0.92 });
     }
   }
-  for (let i = 0; i < 92; i += 1) {
+  for (let i = 0; i < 52; i += 1) {
     const x = (i * 73) % width;
     const y = 108 + ((i * 41) % Math.max(120, height - 260));
     const color = i % 5 === 0 ? 0x246e65 : i % 3 === 0 ? 0x4b8a2f : 0x24551f;
     bg.rect(x, y, 10, 10).fill(color);
     bg.rect(x + 3, y - 6, 5, 6).fill(color);
   }
-  bg.rect(0, height - 122, width, 122).fill({ color: 0x0a3444, alpha: 0.9 });
+  bg.rect(0, height - 112, width, 112).fill({ color: 0x0a3444, alpha: 0.78 });
   for (let x = 0; x < width; x += 24) {
     const wave = Math.sin(time + x * 0.03) * 4;
     bg.rect(x, height - 92 + wave, 18, 3).fill(0x1d7e95);
-  }
-  for (let i = 0; i < 10; i += 1) {
-    const x = width * 0.58 + i * 28;
-    const h = 38 + ((i * 19) % 72);
-    bg.rect(x, height - 130 - h, 20, h).fill(0x10243a);
-    bg.rect(x + 5, height - 150 - (h % 24), 4, 4).fill(0xffc857);
   }
 }
 
@@ -459,51 +442,6 @@ function drawTrain(
     badge.y = y - 32;
     scene.addChild(badge);
   }
-}
-
-function drawMiniMap(
-  scene: PIXI.Container,
-  lines: TransitLine[],
-  frame: { left: number; right: number; top: number; bottom: number },
-  width: number,
-  height: number,
-  theme: ThemeName,
-) {
-  const miniW = Math.max(150, Math.min(190, width * 0.135));
-  const miniH = Math.max(82, Math.min(112, height * 0.14));
-  const x = frame.right - miniW - 34;
-  const y = frame.bottom - miniH - 18;
-  const box = new PIXI.Graphics();
-  box
-    .rect(x, y, miniW, miniH)
-    .fill({ color: 0x06101d, alpha: 0.88 })
-    .stroke({
-      color: theme === "retro" ? 0xffd957 : 0xe4edff,
-      width: theme === "retro" ? 2 : 1,
-      alpha: 0.85,
-    });
-  scene.addChild(box);
-  lines.forEach((line, index) => {
-    const yy = y + 24 + (index * (miniH - 46)) / Math.max(1, lines.length - 1);
-    const route = new PIXI.Graphics();
-    route
-      .moveTo(x + 18, yy)
-      .lineTo(x + miniW - 22, yy)
-      .stroke({
-        color: Number(line.color.replace("#", "0x")),
-        width: 3,
-        alpha: 0.96,
-      });
-    scene.addChild(route);
-  });
-  const zoomPlus = text("+", { fill: "#dbe9ff", fontSize: 18 });
-  zoomPlus.x = x + miniW + 12;
-  zoomPlus.y = y + 8;
-  scene.addChild(zoomPlus);
-  const zoomMinus = text("−", { fill: "#dbe9ff", fontSize: 20 });
-  zoomMinus.x = x + miniW + 14;
-  zoomMinus.y = y + 42;
-  scene.addChild(zoomMinus);
 }
 
 function text(label: string, style: Partial<PIXI.TextStyleOptions>) {

@@ -43,21 +43,18 @@ export function MapShell() {
           </span>
         </button>
         <div className="repo-launcher" aria-label="Current repository">
-          <span className="github-dot" aria-hidden="true">
-            ◖
-          </span>
           <strong>{snapshot.repository.fullName}</strong>
-          <button type="button" onClick={backToEntry} aria-label="Change repository">
-            →
-          </button>
           <small>
-            <span className="live-dot" /> LIVE · Last updated{" "}
+            <span className="live-dot" /> LIVE · Updated{" "}
             {new Date(snapshot.fetchedAt).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             })}{" "}
-            · Auto-refresh every 60s
+            · Refresh 60s
           </small>
+          <button type="button" onClick={backToEntry} aria-label="Change repository">
+            →
+          </button>
         </div>
         <div className="top-controls" aria-label="Map controls">
           <span>THEME</span>
