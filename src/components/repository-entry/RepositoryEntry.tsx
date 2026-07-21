@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { DebugPanel } from "../debug/DebugPanel";
 import { demoSnapshot } from "../../demo/demo-snapshot";
 import { fetchRepositorySnapshot } from "../../github/client";
 import { parseRepositoryInput } from "../../github/repository-parser";
@@ -18,14 +19,23 @@ export function RepositoryEntry() {
     setError(undefined);
     try {
       const ref = parseRepositoryInput(value);
+      console.info("[Git Transit] Launching public repository", ref);
       const snapshot = await fetchRepositorySnapshot(ref);
+      console.info("[Git Transit] Repository snapshot loaded", {
+        repository: snapshot.repository.fullName,
+        branches: snapshot.branches.length,
+        commits: snapshot.commits.length,
+        pullRequests: snapshot.pullRequests.length,
+        warnings: snapshot.warnings,
+      });
       launch(snapshot, `${ref.owner}/${ref.name}`);
     } catch (error) {
-      setError(
+      const message =
         error instanceof Error
           ? error.message
-          : "Repository activity could not be loaded.",
-      );
+          : "Repository activity could not be loaded.";
+      console.error("[Git Transit] Repository launch failed", error);
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -63,10 +73,14 @@ export function RepositoryEntry() {
         <button
           className="demo-button"
           type="button"
-          onClick={() => launch(demoSnapshot, "signalworks/orbit-console")}
+          onClick={() => {
+            console.info("[Git Transit] Launching bundled demo", demoSnapshot);
+            launch(demoSnapshot, "signalworks/orbit-console");
+          }}
         >
           View Demo
         </button>
+        <DebugPanel phase="entry" error={storedError} />
       </section>
     </main>
   );

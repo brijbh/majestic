@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import { useAppStore } from "../state/app-store";
 import type { ThemeName, TransitMapModel, TransitTrain } from "../transit/model";
@@ -13,6 +13,7 @@ type Props = {
 export function TransitCanvas({ model, theme, paused, speed }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const selectTrain = useAppStore((state) => state.selectTrain);
+  const [rendererError, setRendererError] = useState<string>();
 
   useEffect(() => {
     const host = hostRef.current;
@@ -20,6 +21,7 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
 
     const app = new PIXI.Application();
     let destroyed = false;
+    setRendererError(undefined);
 
     void app
       .init({
@@ -37,10 +39,25 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         host.appendChild(app.canvas);
         const scene = new PIXI.Container();
         app.stage.addChild(scene);
-        const tick = () =>
-          drawScene(app, scene, model, theme, paused, speed, selectTrain);
+        const tick = () => {
+          try {
+            drawScene(app, scene, model, theme, paused, speed, selectTrain);
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : "Unknown renderer error";
+            console.error("[Git Transit] Renderer draw failed", error);
+            setRendererError(message);
+            app.ticker.remove(tick);
+          }
+        };
         app.ticker.add(tick);
         drawScene(app, scene, model, theme, paused, speed, selectTrain);
+      })
+      .catch((error: unknown) => {
+        const message =
+          error instanceof Error ? error.message : "PixiJS renderer could not start.";
+        console.error("[Git Transit] Renderer initialization failed", error);
+        setRendererError(message);
       });
 
     return () => {
@@ -49,7 +66,19 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
     };
   }, [model, paused, selectTrain, speed, theme]);
 
-  return <div className="transit-canvas" ref={hostRef} />;
+  return (
+    <div className="transit-canvas" ref={hostRef}>
+      {rendererError ? (
+        <div className="renderer-error" role="alert">
+          <strong>Map renderer failed</strong>
+          <span>{rendererError}</span>
+          <span>
+            Add <code>?debug=1</code> to the URL and share the debug panel.
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function drawScene(

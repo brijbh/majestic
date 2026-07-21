@@ -1,3 +1,4 @@
+import { DebugPanel } from "../debug/DebugPanel";
 import { ActivityFeed } from "../activity-feed/ActivityFeed";
 import { TrainInspector } from "../train-inspector/TrainInspector";
 import { TransitCanvas } from "../../renderer/TransitCanvas";
@@ -96,6 +97,7 @@ export function MapShell() {
           />
         </label>
       </footer>
+      <DebugPanel snapshot={snapshot} model={model} phase="map" />
     </main>
   );
 }
