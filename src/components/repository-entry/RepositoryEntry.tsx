@@ -50,8 +50,8 @@ export function RepositoryEntry() {
       <section className="entry-hero" aria-labelledby="product-title">
         <img className="entry-logo" src="/logo.png" alt="" aria-hidden="true" />
         <p className="eyebrow">Public GitHub repositories only</p>
-        <h1 id="product-title">GIT TRANSIT</h1>
-        <p className="tagline">Watch a repository come alive.</p>
+        <h1 id="product-title">Majestic</h1>
+        <p className="tagline">Live Git Activity Transit Map</p>
         <form className="repo-form" onSubmit={submit}>
           <label htmlFor="repository">Repository</label>
           <div className="repo-input-row">

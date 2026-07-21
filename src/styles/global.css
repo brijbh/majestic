@@ -231,8 +231,8 @@ h1 {
 }
 
 .brand-button img {
-  width: clamp(44px, 3.2vw, 68px);
-  height: clamp(44px, 3.2vw, 68px);
+  width: clamp(86px, 7vw, 150px);
+  height: clamp(48px, 4.2vw, 86px);
   object-fit: contain;
   flex: 0 0 auto;
   filter: drop-shadow(0 0 16px rgba(193, 83, 255, 0.32));
@@ -240,7 +240,7 @@ h1 {
 
 .brand-button strong {
   display: block;
-  font-size: clamp(1.35rem, 1.45vw, 2.4rem);
+  font-size: clamp(1rem, 1.05vw, 1.6rem);
   letter-spacing: 0;
   white-space: nowrap;
 }
@@ -637,7 +637,7 @@ h1 {
   }
 
   .brand-button strong {
-    font-size: 1.2rem;
+    font-size: 0.95rem;
   }
 
   .brand-button small,
@@ -652,8 +652,8 @@ h1 {
   }
 
   .brand-button img {
-    width: 42px;
-    height: 42px;
+    width: 88px;
+    height: 48px;
   }
 
   .top-controls button {

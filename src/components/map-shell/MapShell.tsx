@@ -38,8 +38,8 @@ export function MapShell() {
         <button className="brand-button" type="button" onClick={backToEntry}>
           <img src="/logo.png" alt="" aria-hidden="true" />
           <span>
-            <strong>GIT TRANSIT</strong>
-            <small>LIVE REPOSITORY MAP</small>
+            <strong>Majestic</strong>
+            <small>Live Git Activity Transit Map</small>
           </span>
         </button>
         <div className="repo-launcher" aria-label="Current repository">
