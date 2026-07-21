@@ -9,3 +9,5 @@ coverage
 *.tsbuildinfo
 .vite-dev*.log
 start-prompt.txt
+
+.vercel
