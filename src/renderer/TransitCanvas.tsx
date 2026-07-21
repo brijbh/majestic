@@ -348,18 +348,26 @@ function drawRoute(
   scene.addChild(path);
 
   const labelBox = new PIXI.Graphics();
+  const labelText = lineLabel(line.id);
+  const labelWidth = Math.min(92, Math.max(70, labelText.length * 9 + 24));
   labelBox
-    .roundRect(frame.left - 90, y - 24, 74, 42, theme === "retro" ? 0 : 6)
+    .roundRect(
+      frame.left - labelWidth - 16,
+      y - 24,
+      labelWidth,
+      42,
+      theme === "retro" ? 0 : 6,
+    )
     .fill({ color: 0x06101d, alpha: 0.84 })
     .stroke({ color: Number(line.color.replace("#", "0x")), width: 2 });
   scene.addChild(labelBox);
-  const label = text(lineLabel(line.id), {
+  const label = text(labelText, {
     fill: line.color,
     fontSize: 14,
     fontWeight: "700",
   });
   label.anchor.set(0.5);
-  label.x = frame.left - 53;
+  label.x = frame.left - 16 - labelWidth / 2;
   label.y = y - 2;
   scene.addChild(label);
 
@@ -509,6 +517,7 @@ function text(label: string, style: Partial<PIXI.TextStyleOptions>) {
 
 function lineLabel(line: TransitLine["id"]) {
   if (line === "feature") return "feature/";
+  if (line === "development") return "develop";
   if (line === "release") return "release/";
   if (line === "hotfix") return "hotfix/";
   return line;
