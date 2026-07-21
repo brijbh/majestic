@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { DebugPanel } from "../debug/DebugPanel";
 import { ActivityFeed } from "../activity-feed/ActivityFeed";
 import { TrainInspector } from "../train-inspector/TrainInspector";
@@ -16,8 +17,12 @@ export function MapShell() {
   const backToEntry = useAppStore((state) => state.backToEntry);
   const reducedMotion = useAppStore((state) => state.reducedMotion);
 
-  if (!snapshot) return null;
-  const model = generateTransitMap(snapshot);
+  const model = useMemo(
+    () => (snapshot ? generateTransitMap(snapshot) : undefined),
+    [snapshot],
+  );
+
+  if (!snapshot || !model) return null;
 
   async function fullscreen() {
     if (!document.fullscreenElement) {

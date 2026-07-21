@@ -50,6 +50,7 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
     const app = new PIXI.Application();
     let destroyed = false;
     let initialized = false;
+    let resizeObserver: ResizeObserver | undefined;
     setRendererError(undefined);
 
     void app
@@ -72,7 +73,7 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         const resize = () => {
           app.renderer.resize(host.clientWidth, host.clientHeight);
         };
-        const resizeObserver = new ResizeObserver(resize);
+        resizeObserver = new ResizeObserver(resize);
         resizeObserver.observe(host);
         resize();
         const tick = () => {
@@ -82,13 +83,12 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
             const message =
               error instanceof Error ? error.message : "Unknown renderer error";
             console.error("[Git Transit] Renderer draw failed", error);
-            setRendererError(message);
+            if (!destroyed) setRendererError(message);
             app.ticker.remove(tick);
           }
         };
         app.ticker.add(tick);
         drawScene(app, scene, model, theme, paused, speed, selectTrain);
-        app.stage.once("removed", () => resizeObserver.disconnect());
       })
       .catch((error: unknown) => {
         const message =
@@ -99,6 +99,7 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
 
     return () => {
       destroyed = true;
+      resizeObserver?.disconnect();
       if (initialized) safelyDestroyApp(app);
     };
   }, [model, paused, selectTrain, speed, theme]);
@@ -165,7 +166,9 @@ function drawScene(
     drawTrain(scene, train, line, y, model, frame, theme, time, selectTrain);
   }
 
-  drawMiniMap(scene, lines, frame, width, height, theme);
+  if (height >= 560 && width >= 780) {
+    drawMiniMap(scene, lines, frame, width, height, theme);
+  }
 }
 
 function drawBackground(
@@ -466,10 +469,10 @@ function drawMiniMap(
   height: number,
   theme: ThemeName,
 ) {
-  const miniW = 220;
-  const miniH = 130;
-  const x = Math.min(width - miniW - 34, frame.right - miniW - 22);
-  const y = height - miniH - 30;
+  const miniW = Math.max(158, Math.min(220, width * 0.16));
+  const miniH = Math.max(90, Math.min(130, height * 0.16));
+  const x = frame.right - miniW - 34;
+  const y = frame.bottom - miniH - 18;
   const box = new PIXI.Graphics();
   box
     .rect(x, y, miniW, miniH)
@@ -493,13 +496,13 @@ function drawMiniMap(
       });
     scene.addChild(route);
   });
-  const zoomPlus = text("+", { fill: "#dbe9ff", fontSize: 30 });
-  zoomPlus.x = x + miniW + 24;
-  zoomPlus.y = y + 20;
+  const zoomPlus = text("+", { fill: "#dbe9ff", fontSize: 22 });
+  zoomPlus.x = x + miniW + 18;
+  zoomPlus.y = y + 12;
   scene.addChild(zoomPlus);
-  const zoomMinus = text("−", { fill: "#dbe9ff", fontSize: 34 });
-  zoomMinus.x = x + miniW + 28;
-  zoomMinus.y = y + 70;
+  const zoomMinus = text("−", { fill: "#dbe9ff", fontSize: 24 });
+  zoomMinus.x = x + miniW + 20;
+  zoomMinus.y = y + 52;
   scene.addChild(zoomMinus);
 }
 
