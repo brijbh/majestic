@@ -36,11 +36,7 @@ export function MapShell() {
     <main className={`map-shell theme-${theme}`}>
       <header className="top-bar">
         <button className="brand-button" type="button" onClick={backToEntry}>
-          <img src="/logo.png" alt="" aria-hidden="true" />
-          <span>
-            <strong>Majestic</strong>
-            <small>Live Git Activity Transit Map</small>
-          </span>
+          <img src="/logo.png" alt="Majestic" />
         </button>
         <div className="repo-launcher" aria-label="Current repository">
           <strong>{snapshot.repository.fullName}</strong>
