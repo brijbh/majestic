@@ -21,6 +21,7 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
 
     const app = new PIXI.Application();
     let destroyed = false;
+    let initialized = false;
     setRendererError(undefined);
 
     void app
@@ -32,8 +33,9 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
         resolution: window.devicePixelRatio || 1,
       })
       .then(() => {
+        initialized = true;
         if (destroyed) {
-          app.destroy(true);
+          safelyDestroyApp(app);
           return;
         }
         host.appendChild(app.canvas);
@@ -62,7 +64,9 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
 
     return () => {
       destroyed = true;
-      app.destroy(true, { children: true, texture: true });
+      if (initialized) {
+        safelyDestroyApp(app);
+      }
     };
   }, [model, paused, selectTrain, speed, theme]);
 
@@ -79,6 +83,14 @@ export function TransitCanvas({ model, theme, paused, speed }: Props) {
       ) : null}
     </div>
   );
+}
+
+function safelyDestroyApp(app: PIXI.Application) {
+  try {
+    app.destroy(true, { children: true, texture: true });
+  } catch (error) {
+    console.warn("[Git Transit] PixiJS cleanup skipped after init race", error);
+  }
 }
 
 function drawScene(
